@@ -3,4 +3,6 @@
     <string name="todo">TODO</string>
     <string name="choose">从文件夹中选择</string>
     <string name="take">拍一张照片</string>
+    <string name="save">保存</string>
+    <string name="cancel">取消</string>
 </resources>

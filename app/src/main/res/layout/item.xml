@@ -4,6 +4,8 @@
     android:layout_width="80dp"
     android:layout_height="80dp">
     <TextView
+        android:background="#EEE5DE"
+        android:layout_margin="10dp"
         android:layout_width="match_parent"
         android:gravity="center"
         android:id="@+id/item"

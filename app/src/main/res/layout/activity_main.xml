@@ -23,13 +23,15 @@
             android:visibility="gone"
             android:id="@+id/action"
             android:layout_width="match_parent"
-            android:layout_height="80dp">
+            android:layout_height="80dp"
+            android:orientation="vertical">
         </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
             android:orientation="horizontal">
             <Button
+                android:text="@string/save"
                 android:id="@+id/button_one"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
@@ -37,6 +39,7 @@
                 tools:ignore="ButtonStyle" />
             <Button
                 android:id="@+id/button_two"
+                android:text="@string/cancel"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

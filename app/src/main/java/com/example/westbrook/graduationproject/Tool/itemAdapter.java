@@ -1,4 +1,4 @@
-package com.example.westbrook.graduationproject;
+package com.example.westbrook.graduationproject.Tool;
 
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -6,12 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.example.westbrook.graduationproject.R;
+
 /**
  * Created by westbrook on 2018/1/20.
  * 适配器
  */
 
-public class itemAdapter extends RecyclerView.Adapter<itemAdapter.ViewHolder> implements View.OnClickListener{
+public  class itemAdapter extends RecyclerView.Adapter<itemAdapter.ViewHolder> implements View.OnClickListener{
     private String[] item;
 
     public void setItemClick(onItemClick itemClick) {
@@ -19,7 +21,7 @@ public class itemAdapter extends RecyclerView.Adapter<itemAdapter.ViewHolder> im
     }
 
     public onItemClick itemClick=null;
-    itemAdapter(String[] item) {
+    public itemAdapter(String[] item) {
         this.item = item;
     }
 
@@ -39,7 +41,7 @@ public class itemAdapter extends RecyclerView.Adapter<itemAdapter.ViewHolder> im
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view=LayoutInflater.from(parent.getContext()).inflate(R.layout.item,parent,false);
+        View view= LayoutInflater.from(parent.getContext()).inflate(R.layout.item,parent,false);
         view.setOnClickListener(this);
         return new ViewHolder(view);
     }
@@ -56,6 +58,8 @@ public class itemAdapter extends RecyclerView.Adapter<itemAdapter.ViewHolder> im
         return item==null?0:item.length;
     }
     public interface onItemClick{
-      void itemClick(int position);
+        void itemClick(int position);
     }
 }
+
+

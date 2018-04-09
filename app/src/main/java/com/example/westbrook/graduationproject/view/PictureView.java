@@ -1,4 +1,4 @@
-package com.example.westbrook.graduationproject.Tool;
+package com.example.westbrook.graduationproject.view;
 
 /**
  * Created by westbrook on 3/13/18.
@@ -14,5 +14,5 @@ package com.example.westbrook.graduationproject.Tool;
 public interface PictureView {
     public void showChooseFile(int type);
     public void showNewPicture();
-    public void showSeekBar();
+    public void showSeekBar(int type);
 }

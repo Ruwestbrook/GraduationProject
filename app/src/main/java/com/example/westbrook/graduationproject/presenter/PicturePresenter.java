@@ -5,8 +5,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 
-import com.example.westbrook.graduationproject.Tool.PictureView;
-import com.example.westbrook.graduationproject.model.IPictureImpl;
+import com.example.westbrook.graduationproject.view.PictureView;
 import com.example.westbrook.graduationproject.model.PictureModel;
 
 /**

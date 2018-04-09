@@ -1,20 +1,13 @@
 package com.example.westbrook.graduationproject;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.content.ContentUris;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v4.content.FileProvider;
@@ -22,6 +15,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,12 +27,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.westbrook.graduationproject.Tool.ImageProcessing;
-import com.example.westbrook.graduationproject.Tool.PictureView;
+import com.example.westbrook.graduationproject.view.PictureView;
 import com.example.westbrook.graduationproject.Tool.itemAdapter;
 import com.example.westbrook.graduationproject.presenter.PicturePresenter;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener,PictureView{
@@ -70,6 +63,8 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private boolean isNostalgia=false;
     private boolean isReverse=false;
     private PicturePresenter presenter;
+
+    private int tmp=128;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +82,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        String[] a={"旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化","添加马赛克"};//"色调","饱和度","亮度",
+        String[] a={"旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化","添加马赛克","涂鸦","剪裁"};//"色调","饱和度","亮度",
         itemAdapter adapter=new itemAdapter(a);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(manager);
@@ -105,7 +100,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      imageView.setImageBitmap(currentBitmap);
                      break;
                  case 1://改变颜色系数
-                        showSeekBar();
+                        showSeekBar(1);
                      flag=2;
                      holdBitmap=currentBitmap;
                      break;
@@ -159,8 +154,20 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      imageView.setImageBitmap(holdBitmap);
                      break;
                  case 10:
-                     holdBitmap= ImageProcessing.convertToBMW(currentBitmap,128);
+                     showSeekBar(2);
+                     holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
                      imageView.setImageBitmap(holdBitmap);
+                     break;
+                 case 11:
+                     //马赛克
+
+                     break;
+
+                 case 12:
+                     //涂鸦
+                     break;
+                 case 13:
+                     //剪裁
                      break;
 
              }
@@ -272,17 +279,26 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         switch (seekBar.getId()){
             case R.id.seekOne:
                 mHue=(progress-50)*1.0F/50*180;
+                currentBitmap= ImageProcessing.screenAction(holdBitmap,mHue,mS,mL);
+                imageView.setImageBitmap(currentBitmap);
                 break;
             case R.id.seekTwo:
                 mS=progress*1.0F/50;
+                currentBitmap= ImageProcessing.screenAction(holdBitmap,mHue,mS,mL);
+                imageView.setImageBitmap(currentBitmap);
                 break;
             case R.id.seekThree:
                 mL=progress*1.0F/50;
+                currentBitmap= ImageProcessing.screenAction(holdBitmap,mHue,mS,mL);
+                imageView.setImageBitmap(currentBitmap);
                 break;
-
+            case R.id.seekFour:
+                tmp= (int) (progress*2.56);
+                holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
+                imageView.setImageBitmap(holdBitmap);
+                break;
         }
-      currentBitmap= ImageProcessing.screenAction(holdBitmap,mHue,mS,mL);
-      imageView.setImageBitmap(currentBitmap);
+
 
     }
 
@@ -342,18 +358,36 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     }
 
     @Override
-    public void showSeekBar() {
-        View view= LayoutInflater.from(MainActivity.this).inflate(R.layout.screen_action,null);
-        LinearLayout.LayoutParams layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-        actionLinearLayout.addView(view,layoutParams);
-        mRecyclerView.setVisibility(View.GONE);
-        actionLinearLayout.setVisibility(View.VISIBLE);
-        SeekBar bar=view.findViewById(R.id.seekOne);
-        bar.setOnSeekBarChangeListener(MainActivity.this);
-        SeekBar bar1=view.findViewById(R.id.seekTwo);
-        bar1.setOnSeekBarChangeListener(MainActivity.this);
-        SeekBar bar2=view.findViewById(R.id.seekThree);
-        bar2.setOnSeekBarChangeListener(MainActivity.this);
+    public void showSeekBar(int type) {
+        View view;
+        LinearLayout.LayoutParams layoutParams;
+      switch (type){
+          case 1:
+               view= LayoutInflater.from(MainActivity.this).inflate(R.layout.screen_action,null);
+              layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+              actionLinearLayout.addView(view,layoutParams);
+              mRecyclerView.setVisibility(View.GONE);
+              actionLinearLayout.setVisibility(View.VISIBLE);
+              SeekBar bar=view.findViewById(R.id.seekOne);
+              bar.setOnSeekBarChangeListener(MainActivity.this);
+              SeekBar bar1=view.findViewById(R.id.seekTwo);
+              bar1.setOnSeekBarChangeListener(MainActivity.this);
+              SeekBar bar2=view.findViewById(R.id.seekThree);
+              bar2.setOnSeekBarChangeListener(MainActivity.this);
+              break;
+          case 2:
+               view= LayoutInflater.from(MainActivity.this).inflate(R.layout.seek_bar,null);
+              layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+              actionLinearLayout.addView(view,layoutParams);
+              mRecyclerView.setVisibility(View.GONE);
+              actionLinearLayout.setVisibility(View.VISIBLE);
+              SeekBar bar3=view.findViewById(R.id.seekFour);
+              bar3.setOnSeekBarChangeListener(MainActivity.this);
+              break;
+      }
+
     }
+
+
 }
 

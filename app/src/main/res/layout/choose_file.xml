@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_marginTop="200dp"
+    android:layout_gravity="center_horizontal"
+    android:layout_width="250dp"
+    android:background="@color/white"
+    android:layout_height="100dp"
+    android:orientation="vertical">
+    <TextView
+        android:textColor="#000"
+        android:layout_width="match_parent"
+        android:id="@+id/choose_file"
+        android:text="@string/choose"
+        android:gravity="center"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+    <View
+        android:layout_width="match_parent"
+        android:background="#000"
+        android:layout_height="2dp"/>
+    <TextView
+        android:textColor="#000"
+        android:layout_width="match_parent"
+        android:id="@+id/take_photo"
+        android:text="@string/take"
+        android:gravity="center"
+        android:layout_height="0dp"
+        android:layout_weight="1"/>
+</LinearLayout>

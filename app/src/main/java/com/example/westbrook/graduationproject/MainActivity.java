@@ -1,9 +1,13 @@
 package com.example.westbrook.graduationproject;
 
 import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Matrix;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.provider.MediaStore;
@@ -15,10 +19,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -63,6 +69,9 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private boolean isNostalgia=false;
     private boolean isReverse=false;
     private PicturePresenter presenter;
+
+    int vHeight;
+    int vWidth;
 
     private int tmp=128;
     @Override
@@ -160,9 +169,9 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 11:
                      //马赛克
-
+                     holdBitmap= ImageProcessing.doBlur(currentBitmap,2,true);
+                     imageView.setImageBitmap(holdBitmap);
                      break;
-
                  case 12:
                      //涂鸦
                      break;
@@ -179,9 +188,16 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             @Override
             public void onClick(View v) {
                 flag=1;
+                Log.d(TAG, "onClick: "+imageView.getWidth());
+                Log.d(TAG, "onClick: "+imageView.getHeight());
+                Log.d(TAG, "屏幕宽度 "+getScreenWidth(MainActivity.this));
+                Log.d(TAG, "onClick: "+imageView.getHeight());
+                vHeight=imageView.getHeight();
+                vWidth=imageView.getWidth();
                 linearLayout.setVisibility(View.VISIBLE);
             }
         });
+
         chooseFile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -189,6 +205,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                     ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
                 }else {
                  showChooseFile(2);
+
                 }
             }
         });
@@ -245,8 +262,29 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 default:
                     break;
         }
-        currentBitmap=initiallyBitmap;
+        currentBitmap=   zoomImg(initiallyBitmap,vWidth,vHeight);;
+
         imageView.setImageBitmap(initiallyBitmap);
+
+
+
+        LinearLayout.LayoutParams layoutParams= (LinearLayout.LayoutParams) imageView.getLayoutParams();
+        layoutParams.height=initiallyBitmap.getHeight();
+        layoutParams.width=initiallyBitmap.getWidth();
+        imageView.setLayoutParams(layoutParams);
+
+    }
+
+    public static Bitmap drawableToBitmap(Drawable drawable) {
+
+        int w = drawable.getIntrinsicWidth();
+        int h = drawable.getIntrinsicHeight();
+        Bitmap bitmap = Bitmap.createBitmap(w, h,  Bitmap.Config.ARGB_8888);
+        //注意，下面三行代码要用到，否则在View或者SurfaceView里的canvas.drawBitmap会看不到图
+        Canvas canvas = new Canvas(bitmap);
+        drawable.setBounds(0, 0, w, h);
+        drawable.draw(canvas);
+        return bitmap;
     }
 
 
@@ -386,6 +424,46 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
               break;
       }
 
+    }
+
+    /**
+     * 获取屏幕的宽
+     *
+     * @param context
+     * @return
+     */
+    public static int getScreenWidth(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
+        return dm.widthPixels;
+    }
+
+    /**
+     * 获取屏幕的高度
+     *
+     * @param context
+     * @return
+     */
+    public static int getScreenHeight(Context context) {
+        WindowManager wm = (WindowManager) context.getSystemService(Context.WINDOW_SERVICE);
+        DisplayMetrics dm = new DisplayMetrics();
+        wm.getDefaultDisplay().getMetrics(dm);
+        return dm.heightPixels;
+    }
+
+    public static Bitmap zoomImg(Bitmap bm, int newWidth ,int newHeight){
+        // 获得图片的宽高
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        // 计算缩放比例
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // 取得想要缩放的matrix参数
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);
+        // 得到新的图片
+        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
     }
 
 

@@ -42,11 +42,10 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
     private ImageView imageView;
-    private LinearLayout linearLayout;
+    private LinearLayout backgroundLinearLayout;
     private LinearLayout actionLinearLayout;
-    private TextView chooseFile;
-    //选择拍照
-    private TextView takePhoto;
+    private  PopupWindow popupWindow;
+
     //回退的按钮操作类型
     private int flag=0;
     //拍照的路径
@@ -71,16 +70,10 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         mTool=new Tool(this);
-
-
-
         mRecyclerView=findViewById(R.id.recycler_view);
         imageView=findViewById(R.id.pic);
-       // chooseFile=findViewById(R.id.choose_file);
-       // takePhoto=findViewById(R.id.take_photo);
-        linearLayout=findViewById(R.id.choose);
+        backgroundLinearLayout=findViewById(R.id.background);
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
@@ -177,33 +170,24 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             }
         });
 
-        imageView.setOnClickListener(new View.OnClickListener() {
+//        imageView.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                flag=1;
+//                showChooseFile();
+//            }
+//        });
+
+        backgroundLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 flag=1;
-               // linearLayout.setVisibility(View.VISIBLE);
-                showChooseFile(1);
-                backgroundAlpha(0.5f);
+                showChooseFile();
             }
         });
 
 
-//        chooseFile.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
-//                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
-//                }else {
-//                 showChooseFile(2);
-//                }
-//            }
-//        });
-//        takePhoto.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                showChooseFile(1);
-//            }
-//        });
+
 
     }
 
@@ -215,8 +199,9 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 super.onBackPressed();
                 break;
             case 1:
-                if(linearLayout!=null){
-                    linearLayout.setVisibility(View.GONE);
+                if(popupWindow!=null){
+                    popupWindow.dismiss();
+                    popupWindow=null;
                     flag=0;
                 }
             case 2:
@@ -247,10 +232,22 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 if(resultCode==RESULT_OK){
                     initiallyBitmap= mTool.getFile(this,data);
                 }
+
                 break;
                 default:
                     break;
         }
+        popupWindow.dismiss();
+        Log.d(TAG, "onActivityResult: "+backgroundLinearLayout.getWidth());
+        Log.d(TAG, "onActivityResult: "+backgroundLinearLayout.getHeight());
+        Log.d(TAG, "onActivityResult: 图片宽度"+initiallyBitmap.getWidth());
+        Log.d(TAG, "onActivityResult: 图片高度"+initiallyBitmap.getHeight());
+        if(initiallyBitmap.getHeight()>1326){
+            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap);
+        }else if(initiallyBitmap.getWidth()>1080){
+            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap);
+        }
+
         currentBitmap=initiallyBitmap;
         imageView.setImageBitmap(initiallyBitmap);
     }
@@ -265,14 +262,19 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             case 1:
                 //权限通过
                 if(grantResults.length>0 && PackageManager.PERMISSION_GRANTED==grantResults[0])
-                    showChooseFile(1);
+                    showChooseFile();
                 else
                     Toast.makeText(this, "您未授予权限, 软件无法使用", Toast.LENGTH_SHORT).show();
                 break;
             case 2:
                 //权限通过
                 if(grantResults.length>0 && PackageManager.PERMISSION_GRANTED==grantResults[0])
-                showChooseFile(2);
+                {
+                    Intent intent=null;
+                    intent=new Intent("android.intent.action.GET_CONTENT");
+                    intent.setType("image/*");
+                    startActivityForResult(intent,2);
+                }
                 else
                     Toast.makeText(this, "您未授予权限, 软件无法使用", Toast.LENGTH_SHORT).show();
 
@@ -318,49 +320,65 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
     }
 
-    public void showChooseFile(int type) {
+    public void showChooseFile() {
 
-        PopupWindow popupWindow=new PopupWindow(mTool.dp2px(250),mTool.dp2px(100));
+        popupWindow=new PopupWindow(mTool.dp2px(250),mTool.dp2px(100));
+        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+            @Override
+            public void onDismiss() {
+                backgroundAlpha(1.0f);
+                popupWindow.dismiss();
+            }
+        });
         View view= LayoutInflater.from(this).inflate(R.layout.choose_file,null);
         popupWindow.setContentView(view);
+        backgroundAlpha(0.3f);
         popupWindow.showAtLocation(this.getWindow().getDecorView(),   Gravity.CENTER,0,0);
         popupWindow.setOutsideTouchable(true);
         popupWindow.setFocusable(true);
+        TextView chooseFile=view.findViewById(R.id.choose_file);
 
-//        linearLayout.setVisibility(View.GONE);
-//        flag=0;
-//        Intent intent=null;
-//        switch (type){
-//            case 1:
-//                File file=new File(getExternalCacheDir(),"bitmap.jpg");
-//                try {
-//                    if(file.exists()){
-//                        file.delete();
-//                    }
-//                    file.createNewFile();
-//                } catch (IOException e) {
-//                    e.printStackTrace();
-//                }
-//
-//                if(Build.VERSION.SDK_INT>=24){
-//                    imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
-//                }else {
-//                    imageUri= Uri.fromFile(file);
-//                }
-//                //打开相机
-//                intent=new Intent("android.media.action.IMAGE_CAPTURE");
-//                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-//                startActivityForResult(intent,1);
-//                break;
-//            case 2:
-//                //打开相册
-//                intent=new Intent("android.intent.action.GET_CONTENT");
-//                intent.setType("image/*");
-//                startActivityForResult(intent,2);
-//                break;
-//            default:
-//                break;
-//        }
+        chooseFile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
+                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                }else {
+                  Intent intent=null;
+                intent=new Intent("android.intent.action.GET_CONTENT");
+                intent.setType("image/*");
+                startActivityForResult(intent,2);
+
+                }
+            }
+        });
+        TextView takePhoto=view.findViewById(R.id.take_photo);
+        takePhoto.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                File file=new File(getExternalCacheDir(),"bitmap.jpg");
+                try {
+                    if(file.exists()){
+                        file.delete();
+                    }
+                    file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Intent intent=null;
+                if(Build.VERSION.SDK_INT>=24){
+                    imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
+                }else {
+                    imageUri= Uri.fromFile(file);
+                }
+                //打开相机
+                intent=new Intent("android.media.action.IMAGE_CAPTURE");
+                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                startActivityForResult(intent,1);
+
+            }
+        });
+
     }
 
 

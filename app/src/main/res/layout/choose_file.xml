@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout android:id="@+id/choose"
+    android:layout_width="250dp"
+    android:orientation="vertical"
+    android:background="#E8E8E8"
+    android:layout_height="100dp"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+        <TextView
+            android:textColor="#000"
+            android:layout_width="match_parent"
+            android:id="@+id/choose_file"
+            android:text="@string/choose"
+            android:gravity="center"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+        <View
+            android:layout_width="match_parent"
+            android:background="#000"
+            android:layout_height="2dp"/>
+        <TextView
+            android:textColor="#000"
+            android:layout_width="match_parent"
+            android:id="@+id/take_photo"
+            android:text="@string/take"
+            android:gravity="center"
+            android:layout_height="0dp"
+            android:layout_weight="1"/>
+</LinearLayout>

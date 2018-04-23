@@ -16,25 +16,27 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.PopupWindow;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.westbrook.graduationproject.Tool.ImageProcessing;
-import com.example.westbrook.graduationproject.view.PictureView;
+import com.example.westbrook.graduationproject.Tool.Tool;
 import com.example.westbrook.graduationproject.Tool.itemAdapter;
-import com.example.westbrook.graduationproject.presenter.PicturePresenter;
 
 import java.io.File;
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener,PictureView{
+public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener{
     private Button leftButton;
     private Button  rightButton;
     private RecyclerView mRecyclerView;
@@ -62,7 +64,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     //是否怀旧处理
     private boolean isNostalgia=false;
     private boolean isReverse=false;
-    private PicturePresenter presenter;
+    private Tool mTool;
 
     private int tmp=128;
     @Override
@@ -70,14 +72,14 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        presenter=new PicturePresenter(this);
+        mTool=new Tool(this);
 
 
 
         mRecyclerView=findViewById(R.id.recycler_view);
         imageView=findViewById(R.id.pic);
-        chooseFile=findViewById(R.id.choose_file);
-        takePhoto=findViewById(R.id.take_photo);
+       // chooseFile=findViewById(R.id.choose_file);
+       // takePhoto=findViewById(R.id.take_photo);
         linearLayout=findViewById(R.id.choose);
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
@@ -179,25 +181,29 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             @Override
             public void onClick(View v) {
                 flag=1;
-                linearLayout.setVisibility(View.VISIBLE);
-            }
-        });
-        chooseFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
-                }else {
-                 showChooseFile(2);
-                }
-            }
-        });
-        takePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+               // linearLayout.setVisibility(View.VISIBLE);
                 showChooseFile(1);
+                backgroundAlpha(0.5f);
             }
         });
+
+
+//        chooseFile.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
+//                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+//                }else {
+//                 showChooseFile(2);
+//                }
+//            }
+//        });
+//        takePhoto.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                showChooseFile(1);
+//            }
+//        });
 
     }
 
@@ -223,7 +229,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 default:
                     super.onBackPressed();
                     break;
-        }
+        } 
     }
 
     @Override
@@ -233,13 +239,13 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             case 1:
                 //相机
                 if(resultCode==RESULT_OK) {
-                    initiallyBitmap= presenter.getFile(this, imageUri);
+                    initiallyBitmap= mTool.getFile(this, imageUri);
                 }
                 break;
             case 2:
                 //相册
                 if(resultCode==RESULT_OK){
-                    initiallyBitmap= presenter.getFile(this,data);
+                    initiallyBitmap= mTool.getFile(this,data);
                 }
                 break;
                 default:
@@ -256,13 +262,13 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         switch (requestCode){
-//            case 1:
-//                //权限通过
-//                if(grantResults.length>0 && PackageManager.PERMISSION_GRANTED==grantResults[0])
-//                    choosePicture(1);
-//                else
-//                    Toast.makeText(this, "您未授予权限, 软件无法使用", Toast.LENGTH_SHORT).show();
-//                break;
+            case 1:
+                //权限通过
+                if(grantResults.length>0 && PackageManager.PERMISSION_GRANTED==grantResults[0])
+                    showChooseFile(1);
+                else
+                    Toast.makeText(this, "您未授予权限, 软件无法使用", Toast.LENGTH_SHORT).show();
+                break;
             case 2:
                 //权限通过
                 if(grantResults.length>0 && PackageManager.PERMISSION_GRANTED==grantResults[0])
@@ -312,52 +318,54 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
     }
 
-    @Override
     public void showChooseFile(int type) {
-        linearLayout.setVisibility(View.GONE);
-        flag=0;
-        Intent intent=null;
-        switch (type){
-            case 1:
-                File file=new File(getExternalCacheDir(),"bitmap.jpg");
-                try {
-                    if(file.exists()){
-                        file.delete();
-                    }
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
 
-                if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
-                }else {
-                    imageUri= Uri.fromFile(file);
-                }
-                //打开相机
-                intent=new Intent("android.media.action.IMAGE_CAPTURE");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-                startActivityForResult(intent,1);
-                break;
-            case 2:
-                //打开相册
-                intent=new Intent("android.intent.action.GET_CONTENT");
-                intent.setType("image/*");
-                startActivityForResult(intent,2);
-                break;
-            default:
-                break;
-        }
+        PopupWindow popupWindow=new PopupWindow(mTool.dp2px(250),mTool.dp2px(100));
+        View view= LayoutInflater.from(this).inflate(R.layout.choose_file,null);
+        popupWindow.setContentView(view);
+        popupWindow.showAtLocation(this.getWindow().getDecorView(),   Gravity.CENTER,0,0);
+        popupWindow.setOutsideTouchable(true);
+        popupWindow.setFocusable(true);
+
+//        linearLayout.setVisibility(View.GONE);
+//        flag=0;
+//        Intent intent=null;
+//        switch (type){
+//            case 1:
+//                File file=new File(getExternalCacheDir(),"bitmap.jpg");
+//                try {
+//                    if(file.exists()){
+//                        file.delete();
+//                    }
+//                    file.createNewFile();
+//                } catch (IOException e) {
+//                    e.printStackTrace();
+//                }
+//
+//                if(Build.VERSION.SDK_INT>=24){
+//                    imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
+//                }else {
+//                    imageUri= Uri.fromFile(file);
+//                }
+//                //打开相机
+//                intent=new Intent("android.media.action.IMAGE_CAPTURE");
+//                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+//                startActivityForResult(intent,1);
+//                break;
+//            case 2:
+//                //打开相册
+//                intent=new Intent("android.intent.action.GET_CONTENT");
+//                intent.setType("image/*");
+//                startActivityForResult(intent,2);
+//                break;
+//            default:
+//                break;
+//        }
     }
 
 
 
-    @Override
-    public void showNewPicture() {
 
-    }
-
-    @Override
     public void showSeekBar(int type) {
         View view;
         LinearLayout.LayoutParams layoutParams;
@@ -385,6 +393,16 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
               bar3.setOnSeekBarChangeListener(MainActivity.this);
               break;
       }
+
+    }
+
+    public void backgroundAlpha(float bgAlpha)
+
+    {
+        WindowManager.LayoutParams lp =this.getWindow().getAttributes();
+
+        lp.alpha = bgAlpha; //0.0-1.0
+        this.getWindow().setAttributes(lp);
 
     }
 

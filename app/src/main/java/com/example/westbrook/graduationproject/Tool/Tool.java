@@ -1,4 +1,4 @@
-package com.example.westbrook.graduationproject.model;
+package com.example.westbrook.graduationproject.Tool;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -13,22 +13,31 @@ import android.os.Build;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.provider.Settings;
 import android.support.annotation.RequiresApi;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.WindowManager;
+import android.widget.PopupWindow;
+
+import com.example.westbrook.graduationproject.R;
 
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 
 /**
- * Created by westbrook on 3/13/18.
- * 实现方法
+ * Created by russ on 18-4-23.
+ * 工具类
  */
 
-public class PictureModel implements IPictureImpl {
+public class Tool {
+    private Context mContext;
 
-    @Override
-    public Bitmap getFile(Context context,Uri imageUri) {
+    public Tool(Context context) {
+        mContext = context;
+    }
+
+    public  Bitmap getFile(Context context, Uri imageUri) {
         try {
             return BitmapFactory.decodeStream(context.getContentResolver().openInputStream(imageUri));
         } catch (FileNotFoundException e) {
@@ -37,8 +46,8 @@ public class PictureModel implements IPictureImpl {
         return  null;
     }
 
-    @Override
-    public Bitmap getFile(Context context,Intent data) {
+
+    public Bitmap getFile(Context context, Intent data) {
 
         if(Build.VERSION.SDK_INT>=19)
             return  handleOnKitkat(context,data);
@@ -46,11 +55,10 @@ public class PictureModel implements IPictureImpl {
             return handleBeforeKitkat(context,data);
     }
 
-    @Override
     public void savePicture(Bitmap bitmap) {
         //是否可以对SDcard操作
         if(Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)){
-            String sdCardDir=Environment.getExternalStorageDirectory()+File.separator+"androidPicture"+File.separator;
+            String sdCardDir=Environment.getExternalStorageDirectory()+ File.separator+"androidPicture"+File.separator;
             File file=new File(sdCardDir);
             if(!file.exists())
                 file.mkdir();
@@ -74,19 +82,23 @@ public class PictureModel implements IPictureImpl {
         Uri uri=data.getData();
         if(DocumentsContract.isDocumentUri(context,uri)){
             String docId=DocumentsContract.getDocumentId(uri);
-            if("com.android.providers.media.documents".equals(uri.getAuthority())){
-                String id=docId.split(":")[1];
-                String selection= MediaStore.Images.Media._ID+"="+id;
-                imagePath=getImagePath(context,MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
+            if (uri != null) {
+                if("com.android.providers.media.documents".equals(uri.getAuthority())){
+                    String id=docId.split(":")[1];
+                    String selection= MediaStore.Images.Media._ID+"="+id;
+                    imagePath=getImagePath(context,MediaStore.Images.Media.EXTERNAL_CONTENT_URI,selection);
 
-            }else if("com.android.providers.downloads.documents".equals(uri.getAuthority())){
-                Uri contentUri= ContentUris.withAppendedId(Uri.parse("content://dowmloads/public_downloads"),Long.valueOf(docId));
-                imagePath=getImagePath( context,contentUri,null);
+                }else if("com.android.providers.downloads.documents".equals(uri.getAuthority())){
+                    Uri contentUri= ContentUris.withAppendedId(Uri.parse("content://dowmloads/public_downloads"),Long.valueOf(docId));
+                    imagePath=getImagePath( context,contentUri,null);
+                }
             }
-        }else if("content".equalsIgnoreCase(uri.getScheme())){
-            imagePath=getImagePath( context,uri,null);
-        }else if("file".equalsIgnoreCase(uri.getScheme())){
-            imagePath=uri.getPath();
+        }else if (uri != null) {
+            if("content".equalsIgnoreCase(uri.getScheme())){
+                imagePath=getImagePath( context,uri,null);
+            }else if("file".equalsIgnoreCase(uri.getScheme())){
+                imagePath=uri.getPath();
+            }
         }
         return BitmapFactory.decodeFile(imagePath);
     }
@@ -108,5 +120,45 @@ public class PictureModel implements IPictureImpl {
                 path=cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA));
         }
         return  path;
+    }
+
+
+    public int getWidth(){
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        int width = 0;
+        if (wm != null) {
+            width = wm.getDefaultDisplay().getWidth();
+        }
+        return  width;
+
+    }
+    public int getHeight(){
+        WindowManager wm = (WindowManager) mContext.getSystemService(Context.WINDOW_SERVICE);
+        int height = 0;
+        if (wm != null) {
+            height = wm.getDefaultDisplay().getHeight();
+        }
+        return  height;
+    }
+
+    /**
+     * convert px to its equivalent dp
+     *
+     * 将px转换为与之相等的dp
+     */
+    public  int px2dp(float pxValue) {
+        final float scale =  mContext.getResources().getDisplayMetrics().density;
+        return (int) (pxValue / scale + 0.5f);
+    }
+
+
+    /**
+     * convert dp to its equivalent px
+     *
+     * 将dp转换为与之相等的px
+     */
+    public  int dp2px( float dipValue) {
+        final float scale = mContext.getResources().getDisplayMetrics().density;
+        return (int) (dipValue * scale + 0.5f);
     }
 }

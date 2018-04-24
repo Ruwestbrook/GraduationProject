@@ -11,7 +11,7 @@
         android:id="@+id/background"
         android:layout_above="@+id/menu"
         android:orientation="horizontal">
-        <ImageView
+        <com.example.westbrook.graduationproject.custom.CustomView
             android:adjustViewBounds="true"
             android:id="@+id/pic"
             android:layout_width="0dp"

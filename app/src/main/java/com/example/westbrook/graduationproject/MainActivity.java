@@ -34,6 +34,7 @@ import android.widget.Toast;
 import com.example.westbrook.graduationproject.Tool.ImageProcessing;
 import com.example.westbrook.graduationproject.Tool.Tool;
 import com.example.westbrook.graduationproject.Tool.itemAdapter;
+import com.example.westbrook.graduationproject.custom.CustomView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -45,7 +46,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private Button  rightButton;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
-    private ImageView imageView;
+    private CustomView imageView;
     private RelativeLayout backgroundLinearLayout;
     private LinearLayout actionLinearLayout;
     private  PopupWindow popupWindow;
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        String[] a={"旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化","添加马赛克","涂鸦","剪裁"};//"色调","饱和度","亮度",
+        String[] a={"添加马赛克","涂鸦","剪裁","旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化"};//"色调","饱和度","亮度",
         for (int i=0;i<isDeal.length;i++){
             isDeal[i]=false;
         }
@@ -137,111 +138,111 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
              }
 
              switch (position){
-                 case 0: //旋转
-                     currentBitmap= ImageProcessing.rotate(currentBitmap);
-                     imageView.setImageBitmap(currentBitmap);
+                 case 0:
+
                      break;
-                 case 1://改变颜色系数
-                        showSeekBar(1);
+                 case 1:
+
+                 case 2:
+
+                     break;
+
+                 case 3:
+                         currentBitmap= ImageProcessing.rotate(currentBitmap);
+                         imageView.setImageBitmap(currentBitmap);
+
+                     break;
+                 case 4:
+                     showSeekBar(1);
                      flag=2;
                      holdBitmap=currentBitmap;
                      break;
-                 case 2:
-                     if(!isDeal[2]){
+                 case 5:
+                     if(!isDeal[5]){
                          holdBitmap= ImageProcessing.grayProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
 
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                     isDeal[2]=!isDeal[2];
+                     isDeal[5]=!isDeal[5];
+
                      break;
-                     case 3:
-                     if(!isDeal[3]){
+                 case 6:
+                     if(!isDeal[6]){
                          holdBitmap= ImageProcessing.nostalgiaProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                         isDeal[3]=!isDeal[3];
+                     isDeal[6]=!isDeal[6];
+
                      break;
-                 case 4:
-                     if(!isDeal[4]){
+                 case 7:
+                     if(!isDeal[7]){
                          holdBitmap= ImageProcessing.reverseProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                     isDeal[4]=!isDeal[4];
+                     isDeal[7]=!isDeal[7];
                      break;
-                 case 5:
-                     if(!isDeal[5]){
+                 case 8:
+                     if(!isDeal[8]){
                          holdBitmap= ImageProcessing.toColorEffect(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
 
-                     isDeal[5]=!isDeal[5];
-                     break;
-                 case 6:
-                     if(!isDeal[6]){
-                         holdBitmap= ImageProcessing.highSaturation(currentBitmap);
-                         imageView.setImageBitmap(holdBitmap);
-                     }else {
-                         imageView.setImageBitmap(currentBitmap);
-                     }
-
-                     isDeal[6]=!isDeal[6];
+                     isDeal[8]=!isDeal[8];
 
                      break;
-                 case 7:
-                     if(!isDeal[7]){
+                 case 9:
+                     if(!isDeal[9]){
+                     holdBitmap= ImageProcessing.highSaturation(currentBitmap);
+                     imageView.setImageBitmap(holdBitmap);
+                 }else {
+                     imageView.setImageBitmap(currentBitmap);
+                 }
+
+                     isDeal[9]=!isDeal[9];
+
+                     break;
+                 case 10:
+                     if(!isDeal[10]){
                          holdBitmap= ImageProcessing.handleImageNative(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
 
-                     isDeal[7]=!isDeal[7];
+                     isDeal[10]=!isDeal[10];
                      break;
-                 case 8:
-
-
-
-                     if(!isDeal[8]){
+                 case 11:
+                     if(!isDeal[11]){
                          holdBitmap= ImageProcessing.Carving(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                     isDeal[8]=!isDeal[8];
+                     isDeal[11]=!isDeal[11];
+
                      break;
-                 case 9:
-                     if(!isDeal[9]){
-                         holdBitmap= ImageProcessing.oldPicture(currentBitmap);
-                         imageView.setImageBitmap(holdBitmap);
-                     }else {
-                         imageView.setImageBitmap(currentBitmap);
-                     }
-                     isDeal[9]=!isDeal[9];
+                 case 12:
+                     if(!isDeal[12]){
+                     holdBitmap= ImageProcessing.oldPicture(currentBitmap);
+                     imageView.setImageBitmap(holdBitmap);
+                 }else {
+                     imageView.setImageBitmap(currentBitmap);
+                 }
+                     isDeal[12]=!isDeal[12];
                      break;
-                 case 10:
+                 case 13:
                      showSeekBar(2);
                      flag=2;
                      holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
                      imageView.setImageBitmap(holdBitmap);
-                     break;
-                 case 11:
-                     //马赛克
-
-                     break;
-
-                 case 12:
-                     //涂鸦
-                     break;
-                 case 13:
-                     //剪裁
                      break;
 
              }
@@ -310,8 +311,11 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 default:
                     break;
         }
-       if(popupWindow!=null)
+       if(popupWindow!=null){
            popupWindow.dismiss();
+           popupWindow=null;
+       }
+
         int width=backgroundLinearLayout.getWidth();
         int height=backgroundLinearLayout.getHeight();
         if(initiallyBitmap.getHeight()>height){
@@ -401,63 +405,64 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     }
 
     public void showChooseFile() {
-
-        popupWindow=new PopupWindow(mTool.dp2px(250),mTool.dp2px(100));
-        popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
-            @Override
-            public void onDismiss() {
-                backgroundAlpha(1.0f);
-                popupWindow.dismiss();
-            }
-        });
-        View view= LayoutInflater.from(this).inflate(R.layout.choose_file,null);
-        popupWindow.setContentView(view);
-        backgroundAlpha(0.3f);
-        popupWindow.showAtLocation(this.getWindow().getDecorView(),   Gravity.CENTER,0,0);
-        popupWindow.setOutsideTouchable(true);
-        popupWindow.setFocusable(true);
-        TextView chooseFile=view.findViewById(R.id.choose_file);
-
-        chooseFile.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
-                    ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
-                }else {
-                  Intent intent=null;
-                intent=new Intent("android.intent.action.GET_CONTENT");
-                intent.setType("image/*");
-                startActivityForResult(intent,2);
-
+        if(popupWindow==null){
+            popupWindow=new PopupWindow(mTool.dp2px(250),mTool.dp2px(100));
+            popupWindow.setOnDismissListener(new PopupWindow.OnDismissListener() {
+                @Override
+                public void onDismiss() {
+                    backgroundAlpha(1.0f);
+                    popupWindow.dismiss();
                 }
-            }
-        });
-        TextView takePhoto=view.findViewById(R.id.take_photo);
-        takePhoto.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                File file=new File(getExternalCacheDir(),"bitmap.jpg");
-                try {
-                    if(file.exists()){
-                        file.delete();
+            });
+            View view= LayoutInflater.from(this).inflate(R.layout.choose_file,null);
+            popupWindow.setContentView(view);
+            backgroundAlpha(0.3f);
+            popupWindow.showAtLocation(this.getWindow().getDecorView(),   Gravity.CENTER,0,0);
+            popupWindow.setOutsideTouchable(true);
+            popupWindow.setFocusable(true);
+            TextView chooseFile=view.findViewById(R.id.choose_file);
+
+            chooseFile.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)!=PackageManager.PERMISSION_GRANTED){
+                        ActivityCompat.requestPermissions(MainActivity.this,new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},2);
+                    }else {
+                        Intent intent=null;
+                        intent=new Intent("android.intent.action.GET_CONTENT");
+                        intent.setType("image/*");
+                        startActivityForResult(intent,2);
+
                     }
-                    file.createNewFile();
-                } catch (IOException e) {
-                    e.printStackTrace();
                 }
-                Intent intent=null;
-                if(Build.VERSION.SDK_INT>=24){
-                    imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
-                }else {
-                    imageUri= Uri.fromFile(file);
-                }
-                //打开相机
-                intent=new Intent("android.media.action.IMAGE_CAPTURE");
-                intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
-                startActivityForResult(intent,1);
+            });
+            TextView takePhoto=view.findViewById(R.id.take_photo);
+            takePhoto.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    File file=new File(getExternalCacheDir(),"bitmap.jpg");
+                    try {
+                        if(file.exists()){
+                            file.delete();
+                        }
+                        file.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    Intent intent=null;
+                    if(Build.VERSION.SDK_INT>=24){
+                        imageUri= FileProvider.getUriForFile(MainActivity.this,"com.westbrook.project.fileProvider",file);
+                    }else {
+                        imageUri= Uri.fromFile(file);
+                    }
+                    //打开相机
+                    intent=new Intent("android.media.action.IMAGE_CAPTURE");
+                    intent.putExtra(MediaStore.EXTRA_OUTPUT,imageUri);
+                    startActivityForResult(intent,1);
 
-            }
-        });
+                }
+            });
+        }
 
     }
 
@@ -471,6 +476,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
           case 1:
                view= LayoutInflater.from(MainActivity.this).inflate(R.layout.screen_action,null);
               layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+              actionLinearLayout.removeAllViews();
               actionLinearLayout.addView(view,layoutParams);
               mRecyclerView.setVisibility(View.GONE);
               actionLinearLayout.setVisibility(View.VISIBLE);
@@ -484,6 +490,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
           case 2:
                view= LayoutInflater.from(MainActivity.this).inflate(R.layout.seek_bar,null);
               layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+              actionLinearLayout.removeAllViews();
               actionLinearLayout.addView(view,layoutParams);
               mRecyclerView.setVisibility(View.GONE);
               actionLinearLayout.setVisibility(View.VISIBLE);

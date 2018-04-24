@@ -7,25 +7,38 @@
     tools:context="com.example.westbrook.graduationproject.MainActivity">
     <LinearLayout
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:id="@+id/background"
+        android:layout_above="@+id/menu"
+        android:orientation="vertical">
         <ImageView
             android:id="@+id/pic"
             android:layout_width="match_parent"
-            android:layout_margin="10dp"
-            android:layout_height="350dp"
+            android:layout_height="match_parent"
             android:contentDescription="@string/todo" />
-        <android.support.v7.widget.RecyclerView
-            android:id="@+id/recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"/>
-        <LinearLayout
-            android:visibility="gone"
-            android:id="@+id/action"
-            android:layout_width="match_parent"
-            android:layout_height="80dp"
-            android:orientation="vertical">
-        </LinearLayout>
+    </LinearLayout>
+    <LinearLayout
+        android:id="@+id/menu"
+        android:layout_alignParentBottom="true"
+        android:layout_width="match_parent"
+        android:orientation="vertical"
+        android:layout_height="wrap_content">
+       <LinearLayout
+           android:orientation="vertical"
+           android:layout_width="match_parent"
+           android:layout_height="80dp">
+           <android.support.v7.widget.RecyclerView
+               android:id="@+id/recycler_view"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"/>
+           <LinearLayout
+               android:visibility="gone"
+               android:id="@+id/action"
+               android:layout_width="match_parent"
+               android:layout_height="match_parent"
+               android:orientation="vertical">
+           </LinearLayout>
+       </LinearLayout>
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="60dp"
@@ -47,43 +60,6 @@
         </LinearLayout>
     </LinearLayout>
 
-<LinearLayout
-    android:id="@+id/choose"
-    android:visibility="gone"
-    android:layout_width="match_parent"
-    android:orientation="vertical"
-    android:background="#B2000000"
-    android:layout_height="match_parent">
-    <LinearLayout
-        android:layout_marginTop="200dp"
-        android:layout_gravity="center_horizontal"
-        android:layout_width="250dp"
-        android:background="@color/white"
-        android:orientation="vertical"
-        android:layout_height="100dp"
-        tools:ignore="UselessParent">
-        <TextView
-            android:textColor="#000"
-            android:layout_width="match_parent"
-            android:id="@+id/choose_file"
-            android:text="@string/choose"
-            android:gravity="center"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-        <View
-            android:layout_width="match_parent"
-            android:background="#000"
-            android:layout_height="2dp"/>
-        <TextView
-            android:textColor="#000"
-            android:layout_width="match_parent"
-            android:id="@+id/take_photo"
-            android:text="@string/take"
-            android:gravity="center"
-            android:layout_height="0dp"
-            android:layout_weight="1"/>
-    </LinearLayout>
 
-</LinearLayout>
 
 </RelativeLayout>

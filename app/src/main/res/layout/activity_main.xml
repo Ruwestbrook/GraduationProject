@@ -5,18 +5,19 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context="com.example.westbrook.graduationproject.MainActivity">
-    <LinearLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:id="@+id/background"
         android:layout_above="@+id/menu"
-        android:orientation="vertical">
+        android:orientation="horizontal">
         <ImageView
+            android:adjustViewBounds="true"
             android:id="@+id/pic"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
             android:contentDescription="@string/todo" />
-    </LinearLayout>
+    </RelativeLayout>
     <LinearLayout
         android:id="@+id/menu"
         android:layout_alignParentBottom="true"

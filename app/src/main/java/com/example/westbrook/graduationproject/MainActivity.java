@@ -6,6 +6,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Build;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
@@ -25,6 +26,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -34,6 +36,8 @@ import com.example.westbrook.graduationproject.Tool.Tool;
 import com.example.westbrook.graduationproject.Tool.itemAdapter;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener{
@@ -42,27 +46,20 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
     private ImageView imageView;
-    private LinearLayout backgroundLinearLayout;
+    private RelativeLayout backgroundLinearLayout;
     private LinearLayout actionLinearLayout;
     private  PopupWindow popupWindow;
-
     //回退的按钮操作类型
     private int flag=0;
     //拍照的路径
     private Uri imageUri;
     //初始的bitmap
     private Bitmap initiallyBitmap;
-
     //当前显示的Bitamp
     private Bitmap currentBitmap;
-
     //需要操作的bitmap
     private Bitmap holdBitmap;
-    //是否灰度处理
-    private boolean isGray=false;
-    //是否怀旧处理
-    private boolean isNostalgia=false;
-    private boolean isReverse=false;
+    private boolean[] isDeal=new boolean[14];
     private Tool mTool;
 
     private int tmp=128;
@@ -73,11 +70,61 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         mTool=new Tool(this);
         mRecyclerView=findViewById(R.id.recycler_view);
         imageView=findViewById(R.id.pic);
+        rightButton=findViewById(R.id.button_two);
+        rightButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(initiallyBitmap!=null)
+                imageView.setImageBitmap(initiallyBitmap);
+                else
+                    Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
+            }
+        });
+        leftButton=findViewById(R.id.button_one);
+        leftButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(currentBitmap!=null){
+                    if (Environment.getExternalStorageState().equals( Environment.MEDIA_MOUNTED)) // 判断是否可以对SDcard进行操作  
+                    {    // 获取SDCard指定目录下  
+                        String  sdCardDir = Environment.getExternalStorageDirectory()+ "/CoolImage/";
+                        File dirFile  = new File(sdCardDir);  //目录转化成文件夹  
+                        if (!dirFile .exists()) {              //如果不存在，那就建立这个文件夹  
+                            dirFile .mkdirs();
+                        }                          //文件夹有啦，就可以保存图片啦              
+                        File file = new File(sdCardDir, System.currentTimeMillis()+".jpg");// 在SDcard的目录下创建图片文,以当前时间为其命名  
+
+                        FileOutputStream out = null;
+                        try {
+                            out = new FileOutputStream(file);
+                            currentBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            Log.d(TAG, "_________保存到____sd______指定目录文件夹下____________________");
+                        } catch (FileNotFoundException e) {
+                            e.printStackTrace();
+                            Log.d(TAG, "onClick: "+e.toString());
+                        }
+                        try {
+                            out.flush();
+                            out.close();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Toast.makeText(MainActivity.this,"保存已经至"+Environment.getExternalStorageDirectory()+"/CoolImage/"+"目录文件夹下", Toast.LENGTH_SHORT).show(); 
+                }else {
+                    Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
+                }
+                }
+            }
+
+        });
         backgroundLinearLayout=findViewById(R.id.background);
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
         String[] a={"旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化","添加马赛克","涂鸦","剪裁"};//"色调","饱和度","亮度",
+        for (int i=0;i<isDeal.length;i++){
+            isDeal[i]=false;
+        }
         itemAdapter adapter=new itemAdapter(a);
         mRecyclerView.setAdapter(adapter);
         mRecyclerView.setLayoutManager(manager);
@@ -100,56 +147,88 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      holdBitmap=currentBitmap;
                      break;
                  case 2:
-                     if(!isGray){
+                     if(!isDeal[2]){
                          holdBitmap= ImageProcessing.grayProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
 
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                     isGray=!isGray;
+                     isDeal[2]=!isDeal[2];
                      break;
                      case 3:
-                     if(!isNostalgia){
+                     if(!isDeal[3]){
                          holdBitmap= ImageProcessing.nostalgiaProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                         isNostalgia=!isNostalgia;
+                         isDeal[3]=!isDeal[3];
                      break;
                  case 4:
-                     if(!isReverse){
+                     if(!isDeal[4]){
                          holdBitmap= ImageProcessing.reverseProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
                      }
-                     isReverse=!isReverse;
+                     isDeal[4]=!isDeal[4];
                      break;
                  case 5:
-                     holdBitmap= ImageProcessing.toColorEffect(currentBitmap);
+                     if(!isDeal[5]){
+                         holdBitmap= ImageProcessing.toColorEffect(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
+                     }else {
+                         imageView.setImageBitmap(currentBitmap);
+                     }
 
+                     isDeal[5]=!isDeal[5];
                      break;
                  case 6:
-                     holdBitmap= ImageProcessing.highSaturation(currentBitmap);
-                     imageView.setImageBitmap(holdBitmap);
+                     if(!isDeal[6]){
+                         holdBitmap= ImageProcessing.highSaturation(currentBitmap);
+                         imageView.setImageBitmap(holdBitmap);
+                     }else {
+                         imageView.setImageBitmap(currentBitmap);
+                     }
+
+                     isDeal[6]=!isDeal[6];
+
                      break;
                  case 7:
-                     holdBitmap= ImageProcessing.handleImageNative(currentBitmap);
-                     imageView.setImageBitmap(holdBitmap);
+                     if(!isDeal[7]){
+                         holdBitmap= ImageProcessing.handleImageNative(currentBitmap);
+                         imageView.setImageBitmap(holdBitmap);
+                     }else {
+                         imageView.setImageBitmap(currentBitmap);
+                     }
+
+                     isDeal[7]=!isDeal[7];
                      break;
                  case 8:
-                     holdBitmap= ImageProcessing.Carving(currentBitmap);
-                     imageView.setImageBitmap(holdBitmap);
+
+
+
+                     if(!isDeal[8]){
+                         holdBitmap= ImageProcessing.Carving(currentBitmap);
+                         imageView.setImageBitmap(holdBitmap);
+                     }else {
+                         imageView.setImageBitmap(currentBitmap);
+                     }
+                     isDeal[8]=!isDeal[8];
                      break;
                  case 9:
-                     holdBitmap= ImageProcessing.oldPicture(currentBitmap);
-                     imageView.setImageBitmap(holdBitmap);
+                     if(!isDeal[9]){
+                         holdBitmap= ImageProcessing.oldPicture(currentBitmap);
+                         imageView.setImageBitmap(holdBitmap);
+                     }else {
+                         imageView.setImageBitmap(currentBitmap);
+                     }
+                     isDeal[9]=!isDeal[9];
                      break;
                  case 10:
                      showSeekBar(2);
+                     flag=2;
                      holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
                      imageView.setImageBitmap(holdBitmap);
                      break;
@@ -170,13 +249,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             }
         });
 
-//        imageView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                flag=1;
-//                showChooseFile();
-//            }
-//        });
+
 
         backgroundLinearLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -237,19 +310,26 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 default:
                     break;
         }
-        popupWindow.dismiss();
-        Log.d(TAG, "onActivityResult: "+backgroundLinearLayout.getWidth());
-        Log.d(TAG, "onActivityResult: "+backgroundLinearLayout.getHeight());
-        Log.d(TAG, "onActivityResult: 图片宽度"+initiallyBitmap.getWidth());
-        Log.d(TAG, "onActivityResult: 图片高度"+initiallyBitmap.getHeight());
-        if(initiallyBitmap.getHeight()>1326){
-            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap);
-        }else if(initiallyBitmap.getWidth()>1080){
-            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap);
+       if(popupWindow!=null)
+           popupWindow.dismiss();
+        int width=backgroundLinearLayout.getWidth();
+        int height=backgroundLinearLayout.getHeight();
+        if(initiallyBitmap.getHeight()>height){
+            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap,width,height);
+        }else if(initiallyBitmap.getWidth()>width){
+            initiallyBitmap=mTool.zoomBitmap(initiallyBitmap,width,height);
         }
-
         currentBitmap=initiallyBitmap;
+        RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(initiallyBitmap.getWidth(),initiallyBitmap.getHeight());
+        params.addRule(RelativeLayout.CENTER_IN_PARENT);
+        imageView.setLayoutParams(params);
         imageView.setImageBitmap(initiallyBitmap);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this, "修改图片", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
 

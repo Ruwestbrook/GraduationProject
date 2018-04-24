@@ -16,6 +16,7 @@ import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.support.annotation.RequiresApi;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -164,18 +165,23 @@ public class Tool {
         return (int) (dipValue * scale + 0.5f);
     }
 
-
-    public Bitmap zoomBitmap(Bitmap bm){
+    public Bitmap zoomBitmap(Bitmap bm,int nWidth,int nHeight){
         int width = bm.getWidth();
         int height = bm.getHeight();
         // 计算缩放比例
-        float scaleWidth =  width/((float) 1080);
-        float scaleHeight = height/((float) 1326);
+        float scaleWidth =  ((float) nWidth)/width;  //2
+        float scaleHeight = ((float) nHeight)/height;
         // 取得想要缩放的matrix参数
         Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);
+        if(scaleHeight<scaleWidth){
+            scaleWidth=scaleHeight;
+        }
+        if(scaleWidth>1){
+            scaleWidth=1/scaleWidth;
+        }
+
+        matrix.postScale(scaleWidth, scaleWidth);
         // 得到新的图片
-        Bitmap newbm = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
-        return newbm;
+        return Bitmap.createBitmap(bm, 0, 0, width, height, matrix, true);
     }
 }

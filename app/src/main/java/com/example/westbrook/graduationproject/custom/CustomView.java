@@ -1,5 +1,6 @@
 package com.example.westbrook.graduationproject.custom;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -10,6 +11,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
@@ -30,9 +32,7 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
 
     private int paintColor;
 
-    //记录画笔的集合
 
-    private List<MyPath> mPaths;
 
     //画笔
     private Paint mPaint;
@@ -41,6 +41,9 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
     private Path mPath;
 
     private Canvas mCanvas;
+    private Bitmap drawBitmap;
+    private float lastX;
+    private float lastY;
 
 
     public void setOnCLick(boolean onCLick,int type) {
@@ -49,14 +52,16 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
             mPaint=new Paint();
             mPaint.setAntiAlias(true);
             mPaint.setStyle(Paint.Style.STROKE);
-            mPaths=new ArrayList<>();
             mPath=new Path();
         }
         if(type==1){
             //涂鸦
-            mPaint.setStrokeWidth(10);
-            mPaint.setColor(Color.parseColor("#fff"));
-            mCanvas=new Canvas(changeDrawable());
+            paintWidth=10;
+            mPaint.setStrokeWidth(paintWidth);
+            paintColor=Color.RED;
+            mPaint.setColor(paintColor);
+            drawBitmap=changeDrawable();
+            mCanvas=new Canvas(drawBitmap);
         }
         if(type==2){
 
@@ -78,22 +83,35 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
     @Override
     protected void onDraw(Canvas canvas) {
        if(isOnCLick){
-
+           canvas.drawBitmap(drawBitmap,0,0,null);
        }else {
            super.onDraw(canvas);
        }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if(isOnCLick){
+            Log.d("MainActivity", "onTouchEvent: "+event.getAction());
+            float x=event.getX();
+            float y=event.getY();
             switch (event.getAction()){
                 case MotionEvent.ACTION_DOWN:
+                    lastX=x;
+                    lastY=y;
+                    mPath.moveTo(x,y);
                     break;
                 case MotionEvent.ACTION_UP:
+                    //每次抬起之后记录当前的颜色和轨迹
+                    mPath.reset();
                     break;
                 case MotionEvent.ACTION_MOVE:
-
+                    mPath.quadTo(lastX,lastY,x,y);
+                    drawBitmap();
+                    invalidate();
+                    lastY=y;
+                    lastX=x;
                     break;
             }
             return  true;
@@ -103,25 +121,15 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
         }
 
     }
-
-    static class MyPath{
-        Path mPath;
-        Color mColor;
-        int width;
-
-        public MyPath(Path path, Color color, int width) {
-            mPath = path;
-            mColor = color;
-            this.width = width;
-        }
+    void drawBitmap(){
+        mCanvas.drawPath(mPath,mPaint);
     }
+
 
     private Bitmap changeDrawable(){
         Bitmap bitmap=null;
         Drawable drawable=getDrawable();
-        if(drawable instanceof BitmapDrawable){
-            return ((BitmapDrawable) drawable).getBitmap();
-        }
+
         int w=drawable.getIntrinsicWidth();
         int h=drawable.getIntrinsicHeight();
         bitmap=Bitmap.createBitmap(w,h, Bitmap.Config.ARGB_8888);

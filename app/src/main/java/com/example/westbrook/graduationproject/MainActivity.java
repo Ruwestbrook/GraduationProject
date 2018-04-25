@@ -62,6 +62,8 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private Bitmap holdBitmap;
     private boolean[] isDeal=new boolean[14];
     private Tool mTool;
+    private Intent data;
+    private int type;
 
     private int tmp=128;
     @Override
@@ -75,8 +77,31 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(initiallyBitmap!=null)
-                imageView.setImageBitmap(initiallyBitmap);
+                if(initiallyBitmap!=null){
+                    Log.d(TAG, "onClick: 重置图片");
+                    Log.d(TAG, "onClick: "+type);
+                    Bitmap bitmap=null;
+                    if(type==1){
+                         bitmap=mTool.getFile(MainActivity.this,imageUri);
+                    }else {
+                        int width=backgroundLinearLayout.getWidth();
+                        int height=backgroundLinearLayout.getHeight();
+                        bitmap=mTool.getFile(MainActivity.this,data);
+                        if(bitmap.getHeight()>height){
+                            bitmap=mTool.zoomBitmap(bitmap,width,height);
+                        }else if(bitmap.getWidth()>width){
+                            bitmap=mTool.zoomBitmap(bitmap,width,height);
+                        }
+                        imageView.setOnCLick(false,1);
+                        imageView.setImageBitmap(initiallyBitmap);
+                        imageView.setOnCLick(true,1);
+                    }
+
+                    initiallyBitmap=bitmap;
+
+                    currentBitmap=initiallyBitmap;
+                }
+
                 else
                     Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
             }
@@ -142,17 +167,18 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 1:
-
+                     backgroundLinearLayout.setOnClickListener(null);
+                     imageView.setOnClickListener(null);
+                     imageView.setOnCLick(true,1);
                  case 2:
-
                      break;
-
                  case 3:
-                         currentBitmap= ImageProcessing.rotate(currentBitmap);
-                         imageView.setImageBitmap(currentBitmap);
+                     currentBitmap= ImageProcessing.rotate(currentBitmap);
+                     imageView.setImageBitmap(currentBitmap);
 
                      break;
                  case 4:
+                     resetImageView();
                      showSeekBar(1);
                      flag=2;
                      holdBitmap=currentBitmap;
@@ -169,6 +195,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 6:
+                     resetImageView();
                      if(!isDeal[6]){
                          holdBitmap= ImageProcessing.nostalgiaProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -179,6 +206,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 7:
+                     resetImageView();
                      if(!isDeal[7]){
                          holdBitmap= ImageProcessing.reverseProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -188,6 +216,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      isDeal[7]=!isDeal[7];
                      break;
                  case 8:
+                     resetImageView();
                      if(!isDeal[8]){
                          holdBitmap= ImageProcessing.toColorEffect(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -199,6 +228,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 9:
+                     resetImageView();
                      if(!isDeal[9]){
                      holdBitmap= ImageProcessing.highSaturation(currentBitmap);
                      imageView.setImageBitmap(holdBitmap);
@@ -210,6 +240,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 10:
+                     resetImageView();
                      if(!isDeal[10]){
                          holdBitmap= ImageProcessing.handleImageNative(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -220,6 +251,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      isDeal[10]=!isDeal[10];
                      break;
                  case 11:
+                     resetImageView();
                      if(!isDeal[11]){
                          holdBitmap= ImageProcessing.Carving(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -230,6 +262,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      break;
                  case 12:
+                     resetImageView();
                      if(!isDeal[12]){
                      holdBitmap= ImageProcessing.oldPicture(currentBitmap);
                      imageView.setImageBitmap(holdBitmap);
@@ -239,6 +272,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      isDeal[12]=!isDeal[12];
                      break;
                  case 13:
+                     resetImageView();
                      showSeekBar(2);
                      flag=2;
                      holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
@@ -263,6 +297,23 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
 
 
+    }
+
+
+    void resetImageView(){
+        backgroundLinearLayout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                flag=1;
+                showChooseFile();
+            }
+        });
+        imageView.setOnCLick(false,0);
+        imageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            }
+        });
     }
 
 
@@ -298,12 +349,15 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             case 1:
                 //相机
                 if(resultCode==RESULT_OK) {
+                    type=1;
                     initiallyBitmap= mTool.getFile(this, imageUri);
                 }
                 break;
             case 2:
                 //相册
                 if(resultCode==RESULT_OK){
+                    type=2;
+                    this.data=data;
                     initiallyBitmap= mTool.getFile(this,data);
                 }
 
@@ -331,7 +385,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(MainActivity.this, "修改图片", Toast.LENGTH_SHORT).show();
+
             }
         });
     }

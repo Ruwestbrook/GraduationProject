@@ -42,8 +42,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener{
-    private Button leftButton;
-    private Button  rightButton;
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
     private CustomView imageView;
@@ -73,7 +71,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         mTool=new Tool(this);
         mRecyclerView=findViewById(R.id.recycler_view);
         imageView=findViewById(R.id.pic);
-        rightButton=findViewById(R.id.button_two);
+         Button rightButton = findViewById(R.id.button_two);
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -106,7 +104,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                     Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
             }
         });
-        leftButton=findViewById(R.id.button_one);
+        Button leftButton = findViewById(R.id.button_one);
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -164,12 +162,14 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
              switch (position){
                  case 0:
-
+                     backgroundLinearLayout.setOnClickListener(null);
+                     imageView.setOnClickListener(null);
+                     imageView.setOnCLick(true,1);
                      break;
                  case 1:
                      backgroundLinearLayout.setOnClickListener(null);
                      imageView.setOnClickListener(null);
-                     imageView.setOnCLick(true,1);
+                     imageView.setOnCLick(true,2);
                  case 2:
                      break;
                  case 3:

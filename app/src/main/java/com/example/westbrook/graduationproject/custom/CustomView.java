@@ -63,9 +63,7 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
             drawBitmap=changeDrawable();
             mCanvas=new Canvas(drawBitmap);
         }
-        if(type==2){
-
-        }
+        
     }
 
     public CustomView(Context context) {
@@ -82,11 +80,11 @@ public class CustomView extends android.support.v7.widget.AppCompatImageView {
 
     @Override
     protected void onDraw(Canvas canvas) {
-       if(isOnCLick){
-           canvas.drawBitmap(drawBitmap,0,0,null);
-       }else {
-           super.onDraw(canvas);
-       }
+        if(isOnCLick){
+            canvas.drawBitmap(drawBitmap,0,0,null);
+        }else {
+            super.onDraw(canvas);
+        }
     }
 
     @SuppressLint("ClickableViewAccessibility")

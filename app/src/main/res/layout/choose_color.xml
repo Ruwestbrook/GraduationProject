@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:background="#CFCFCF"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="100dp">
+
+  <RadioGroup
+      android:id="@+id/group"
+      android:orientation="horizontal"
+      android:layout_width="match_parent"
+      android:layout_height="50dp">
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="15dp"
+          android:textColor="@color/black"
+          android:text="@string/black"
+          android:layout_height="20dp"
+          android:layout_marginStart="15dp" />
+
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="10dp"
+          android:text="@string/red"
+          android:textColor="@color/red"
+          android:layout_height="20dp"
+          android:layout_marginStart="10dp" />
+
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="10dp"
+          android:text="@string/yellow"
+          android:textColor="@color/yellow"
+          android:layout_height="20dp"
+          android:layout_marginStart="10dp" />
+
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="10dp"
+          android:text="@string/blue"
+          android:textColor="@color/blue"
+          android:layout_height="20dp"
+          android:layout_marginStart="10dp" />
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="10dp"
+          android:text="@string/green"
+          android:textColor="@color/green"
+          android:layout_height="20dp"
+          android:layout_marginStart="10dp" />
+      <RadioButton
+          android:layout_gravity="center_vertical"
+          android:layout_width="50dp"
+          android:layout_marginLeft="10dp"
+          android:text="@string/purple"
+          android:textColor="@color/purple"
+          android:layout_height="20dp"
+          android:layout_marginStart="10dp" />
+  </RadioGroup>
+
+    <Button
+        android:id="@+id/confirm"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginLeft="83dp"
+        android:layout_marginStart="83dp"
+        android:text="@string/confirm" />
+
+    <Button
+        android:layout_alignParentBottom="true"
+        android:layout_marginLeft="40dp"
+        android:layout_toRightOf="@id/confirm"
+        android:text="@string/cancel"
+        android:id="@+id/cancel"
+        android:layout_width="80dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="40dp"
+        android:layout_toEndOf="@id/confirm" />
+</RelativeLayout>

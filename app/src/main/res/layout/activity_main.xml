@@ -11,12 +11,7 @@
         android:id="@+id/background"
         android:layout_above="@+id/menu"
         android:orientation="horizontal">
-        <com.example.westbrook.graduationproject.custom.CustomView
-            android:adjustViewBounds="true"
-            android:id="@+id/pic"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:contentDescription="@string/todo" />
+
     </RelativeLayout>
     <LinearLayout
         android:id="@+id/menu"

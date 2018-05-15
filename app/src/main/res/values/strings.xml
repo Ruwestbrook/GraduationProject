@@ -24,4 +24,6 @@
     <string name="yellow">黄</string>
     <string name="black">黑</string>
     <string name="load">上拉加载更多</string>
+    <string name="paint">画笔粗细</string>
+    <string name="chexiao">撤销上一步操作</string>
 </resources>

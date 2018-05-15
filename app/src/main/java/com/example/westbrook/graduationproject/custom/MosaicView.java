@@ -1,13 +1,9 @@
 package com.example.westbrook.graduationproject.custom;
 
-/**
- * Created by westbrook on 2018/5/14.
- * 马赛克效果
- */
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.DiscretePathEffect;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -18,12 +14,13 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.util.AttributeSet;
 import android.view.MotionEvent;
-
+import android.widget.ImageView;
 
 import java.util.ArrayList;
 
 /**
- * Created on 2017/8/3.
+ * Created by westbrook on 2018/5/14.
+ * MosaicView 马赛克
  */
 
 public class MosaicView extends android.support.v7.widget.AppCompatImageView {
@@ -34,15 +31,16 @@ public class MosaicView extends android.support.v7.widget.AppCompatImageView {
     private RectF mBitmapRectF;
     private PorterDuffXfermode mDuffXfermode;
     private float tempX,tempY;
+    private final float mTargetWidth = 20.0f;
 
     public MosaicView(Context context) {
-        this(context,null);
-
-  }
+        super(context);
+        init();
+    }
 
     public MosaicView(Context context, AttributeSet attrs) {
-        this(context, attrs,0);
-
+        super(context, attrs);
+        init();
     }
 
     public MosaicView(Context context, AttributeSet attrs, int defStyleAttr) {
@@ -109,7 +107,6 @@ public class MosaicView extends android.support.v7.widget.AppCompatImageView {
     // 生成小图
     private void scaleBitmap(Bitmap bm) {
         int width = bm.getWidth();
-        float mTargetWidth = 20.0f;
         float scale = mTargetWidth / width;
         Matrix matrix = new Matrix();
         matrix.postScale(scale, scale);

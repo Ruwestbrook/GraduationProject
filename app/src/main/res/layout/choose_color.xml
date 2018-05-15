@@ -1,21 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout xmlns:tools="http://schemas.android.com/tools"
     android:background="#CFCFCF"
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="100dp">
+    android:layout_height="80dp"
+    android:orientation="vertical">
 
   <RadioGroup
       android:id="@+id/group"
       android:orientation="horizontal"
       android:layout_width="match_parent"
-      android:layout_height="50dp">
+      android:layout_height="30dp">
       <RadioButton
           android:layout_gravity="center_vertical"
           android:layout_width="50dp"
           android:layout_marginLeft="15dp"
           android:textColor="@color/black"
           android:text="@string/black"
+            android:id="@+id/normal"
           android:layout_height="20dp"
           android:layout_marginStart="15dp" />
 
@@ -63,25 +65,33 @@
           android:layout_marginStart="10dp" />
   </RadioGroup>
 
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="18dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:textSize="10sp"
+            android:text="@string/paint"
+            tools:ignore="SmallSp" />
+        <SeekBar
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:max="100"
+            android:progress="50"
+            android:id="@+id/seekFive"/>
+    </LinearLayout>
+
     <Button
         android:id="@+id/confirm"
         android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_marginLeft="83dp"
-        android:layout_marginStart="83dp"
-        android:text="@string/confirm" />
+        android:layout_height="30dp"
+        android:layout_gravity="center"
+        android:textSize="9sp"
 
-    <Button
-        android:layout_alignParentBottom="true"
-        android:layout_marginLeft="40dp"
-        android:layout_toRightOf="@id/confirm"
-        android:text="@string/cancel"
-        android:id="@+id/cancel"
-        android:layout_width="80dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="40dp"
-        android:layout_toEndOf="@id/confirm" />
-</RelativeLayout>
+        android:text="@string/chexiao"
+        tools:ignore="SmallSp" />
+</LinearLayout>

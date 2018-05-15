@@ -5,9 +5,11 @@ package com.example.westbrook.graduationproject.custom;
  * GraffitiView 涂鸦
  */
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
@@ -21,11 +23,6 @@ import android.view.MotionEvent;
 
 
 import java.util.ArrayList;
-
-/**
- * Created on 2017/8/3.
- */
-
 public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
     private Bitmap mMosaicBmp;
     private Paint mPaint;
@@ -34,7 +31,8 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
     private RectF mBitmapRectF;
     private PorterDuffXfermode mDuffXfermode;
     private float tempX,tempY;
-
+    private int paintWidth=10;
+    private  int paintColor=Color.BLACK;
     public GraffitiView(Context context) {
         this(context,null);
 
@@ -55,24 +53,25 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
         mPaint.setAntiAlias(true);
         mPaint.setDither(true);
         mPaint.setStyle(Paint.Style.STROKE);//描边
-        mPaint.setTextAlign(Paint.Align.CENTER);//居中
-        mPaint.setStrokeCap(Paint.Cap.ROUND);//圆角
-        mPaint.setStrokeJoin(Paint.Join.ROUND);//拐点圆角
-        //正常效果
-        mPaint.setStrokeWidth(32);
-//        //抖动效果
-//        mPaint.setStrokeWidth(2f);
-//        mPaint.setPathEffect(new DiscretePathEffect(0.35f, 40));
-
-        //
+        mPaint.setColor(paintColor);
+        mPaint.setStrokeWidth(paintWidth);
         mPaths = new ArrayList<>();
-
         mBitmapRectF = new RectF();
-
         //叠加效果
         mDuffXfermode = new PorterDuffXfermode(PorterDuff.Mode.SRC_IN);
     }
-
+  public void setWidth(int width){
+        if(mPaint!=null){
+            mPaint.setStrokeWidth(width);
+            paintWidth=width;
+        }
+  }
+  public void setColor(int color){
+      if(mPaint!=null){
+          mPaint.setColor(color);
+          paintColor=color;
+      }
+  }
     /**
      * 清楚操作
      * */
@@ -187,6 +186,7 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
         }
     }
 
+    @SuppressLint("ClickableViewAccessibility")
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         switch (event.getAction()){
@@ -195,6 +195,8 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
                 float downY = event.getY();
                 mLastPath = new DrawPath();//每次手指下去都是一条新的路径
                 mLastPath.moveTo(downX,downY);
+                mLastPath.color=paintColor;
+                mLastPath.width=paintWidth;
                 mPaths.add(mLastPath);
                 invalidate();
                 tempX = downX;
@@ -225,6 +227,8 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
         float downX;
         float downY;
         boolean quaded;
+        int color;
+        int width;
 
         DrawPath() {
             path = new Path();
@@ -251,6 +255,8 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
 
         void draw(Canvas canvas) {
             if (path != null) {
+                mPaint.setStrokeWidth(width);
+                mPaint.setColor(color);
                 canvas.drawPath(path, mPaint);
             }
         }

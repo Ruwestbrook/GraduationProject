@@ -26,6 +26,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.PopupWindow;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.RelativeLayout;
 import android.widget.SeekBar;
 import android.widget.TextView;
@@ -34,7 +36,8 @@ import android.widget.Toast;
 import com.example.westbrook.graduationproject.Tool.ImageProcessing;
 import com.example.westbrook.graduationproject.Tool.Tool;
 import com.example.westbrook.graduationproject.Tool.itemAdapter;
-import com.example.westbrook.graduationproject.custom.CustomView;
+import com.example.westbrook.graduationproject.custom.GraffitiView;
+import com.example.westbrook.graduationproject.custom.MosaicView;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -44,7 +47,7 @@ import java.io.IOException;
 public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBarChangeListener{
     private RecyclerView mRecyclerView;
     private static final String TAG = "MainActivity";
-    private CustomView imageView;
+    private ImageView imageView;
     private RelativeLayout backgroundLinearLayout;
     private LinearLayout actionLinearLayout;
     private  PopupWindow popupWindow;
@@ -70,7 +73,6 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         setContentView(R.layout.activity_main);
         mTool=new Tool(this);
         mRecyclerView=findViewById(R.id.recycler_view);
-        imageView=findViewById(R.id.pic);
          Button rightButton = findViewById(R.id.button_two);
         rightButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -90,14 +92,15 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                         }else if(bitmap.getWidth()>width){
                             bitmap=mTool.zoomBitmap(bitmap,width,height);
                         }
-                        imageView.setOnCLick(false,1);
-                        imageView.setImageBitmap(initiallyBitmap);
-                        imageView.setOnCLick(true,1);
+
+
+
                     }
 
                     initiallyBitmap=bitmap;
 
                     currentBitmap=initiallyBitmap;
+                    imageView.setImageBitmap(currentBitmap);
                 }
 
                 else
@@ -115,14 +118,13 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                         File dirFile  = new File(sdCardDir);  //目录转化成文件夹  
                         if (!dirFile .exists()) {              //如果不存在，那就建立这个文件夹  
                             dirFile .mkdirs();
-                        }                          //文件夹有啦，就可以保存图片啦              
-                        File file = new File(sdCardDir, System.currentTimeMillis()+".jpg");// 在SDcard的目录下创建图片文,以当前时间为其命名  
+                        }                          //文件夹存在，保存图片
+                        File file = new File(sdCardDir, System.currentTimeMillis()+".jpg");// 在SD卡的目录下创建图片文,以当前时间为其命名
 
                         FileOutputStream out = null;
                         try {
                             out = new FileOutputStream(file);
                             currentBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
-                            Log.d(TAG, "_________保存到____sd______指定目录文件夹下____________________");
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             Log.d(TAG, "onClick: "+e.toString());
@@ -132,8 +134,9 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                             out.close();
                         } catch (IOException e) {
                             e.printStackTrace();
+                            Log.d(TAG, "onClick: "+e.toString());
                         }
-                        Toast.makeText(MainActivity.this,"保存已经至"+Environment.getExternalStorageDirectory()+"/CoolImage/"+"目录文件夹下", Toast.LENGTH_SHORT).show(); 
+                        Toast.makeText(MainActivity.this,"图片以保存", Toast.LENGTH_SHORT).show();
                 }else {
                     Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
                 }
@@ -163,27 +166,32 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
              switch (position){
                  case 0:
                      backgroundLinearLayout.setOnClickListener(null);
-                     imageView.setOnClickListener(null);
-                     imageView.setOnCLick(true,1);
+                     showPicture(1);
+                     imageView.setImageBitmap(currentBitmap);
                      break;
                  case 1:
                      backgroundLinearLayout.setOnClickListener(null);
-                     imageView.setOnClickListener(null);
-                     imageView.setOnCLick(true,2);
+                     showPicture(2);
+                     showSeekBar(3);
+                     flag=2;
+                     imageView.setImageBitmap(currentBitmap);
                  case 2:
                      break;
                  case 3:
+                     showPicture(0);
                      currentBitmap= ImageProcessing.rotate(currentBitmap);
                      imageView.setImageBitmap(currentBitmap);
 
                      break;
                  case 4:
                      resetImageView();
+                     showPicture(0);
                      showSeekBar(1);
                      flag=2;
                      holdBitmap=currentBitmap;
                      break;
                  case 5:
+                     showPicture(0);
                      if(!isDeal[5]){
                          holdBitmap= ImageProcessing.grayProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -196,6 +204,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 6:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[6]){
                          holdBitmap= ImageProcessing.nostalgiaProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -207,6 +216,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 7:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[7]){
                          holdBitmap= ImageProcessing.reverseProcessing(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -217,6 +227,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 8:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[8]){
                          holdBitmap= ImageProcessing.toColorEffect(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -229,6 +240,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 9:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[9]){
                      holdBitmap= ImageProcessing.highSaturation(currentBitmap);
                      imageView.setImageBitmap(holdBitmap);
@@ -241,6 +253,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 10:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[10]){
                          holdBitmap= ImageProcessing.handleImageNative(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -252,6 +265,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 11:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[11]){
                          holdBitmap= ImageProcessing.Carving(currentBitmap);
                          imageView.setImageBitmap(holdBitmap);
@@ -263,9 +277,11 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      break;
                  case 12:
                      resetImageView();
+                     showPicture(0);
                      if(!isDeal[12]){
                      holdBitmap= ImageProcessing.oldPicture(currentBitmap);
                      imageView.setImageBitmap(holdBitmap);
+
                  }else {
                      imageView.setImageBitmap(currentBitmap);
                  }
@@ -276,6 +292,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      showSeekBar(2);
                      flag=2;
                      holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
+                     showPicture(0);
                      imageView.setImageBitmap(holdBitmap);
                      break;
 
@@ -308,7 +325,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 showChooseFile();
             }
         });
-        imageView.setOnCLick(false,0);
+
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -370,6 +387,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
            popupWindow=null;
        }
 
+
         int width=backgroundLinearLayout.getWidth();
         int height=backgroundLinearLayout.getHeight();
         if(initiallyBitmap.getHeight()>height){
@@ -378,18 +396,49 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             initiallyBitmap=mTool.zoomBitmap(initiallyBitmap,width,height);
         }
         currentBitmap=initiallyBitmap;
-        RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(initiallyBitmap.getWidth(),initiallyBitmap.getHeight());
-        params.addRule(RelativeLayout.CENTER_IN_PARENT);
-        imageView.setLayoutParams(params);
-        imageView.setImageBitmap(initiallyBitmap);
-        imageView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
+        showPicture(3);
+        imageView.setImageBitmap(currentBitmap);
     }
 
+
+   void showPicture(int type){
+        boolean flag=false;
+       if(type==0){
+           if(((imageView instanceof GraffitiView) || (imageView instanceof MosaicView))){
+               backgroundLinearLayout.removeAllViews();
+               imageView=new ImageView(this);
+               flag=true;
+           }
+
+       }else if (type==1){
+
+            if(!(imageView instanceof MosaicView)){
+                backgroundLinearLayout.removeAllViews();
+                imageView=new MosaicView(this);
+                flag=true;
+            }
+
+        }else if (type==2){
+            if(!(imageView instanceof GraffitiView)){
+                backgroundLinearLayout.removeAllViews();
+                imageView=new GraffitiView(this);
+                flag=true;
+            }
+
+        }else if (type==3){
+           backgroundLinearLayout.removeAllViews();
+            imageView=new ImageView(this);
+                flag=true;
+        }
+       Log.d(TAG, "showPicture: "+imageView.toString());
+       Log.d(TAG, "showPicture: "+flag);
+        if(flag){
+            RelativeLayout.LayoutParams params=new RelativeLayout.LayoutParams(initiallyBitmap.getWidth(),initiallyBitmap.getHeight());
+            params.addRule(RelativeLayout.CENTER_IN_PARENT);
+            imageView.setLayoutParams(params);
+            backgroundLinearLayout.addView(imageView);
+        }
+    }
 
 
     //权限的申请
@@ -443,6 +492,15 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
                 imageView.setImageBitmap(holdBitmap);
                 break;
+            case R.id.seekFive:
+                //设置画笔粗细
+                int width=(int) (0.18*progress)+1;
+                if(imageView instanceof GraffitiView){
+                    GraffitiView view  =(GraffitiView)imageView;
+                    view .setWidth(width);
+                }
+                break;
+
         }
 
 
@@ -551,6 +609,64 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
               SeekBar bar3=view.findViewById(R.id.seekFour);
               bar3.setOnSeekBarChangeListener(MainActivity.this);
               break;
+
+          case 3:
+              view= LayoutInflater.from(MainActivity.this).inflate(R.layout.choose_color,null);
+              layoutParams= new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
+              actionLinearLayout.removeAllViews();
+              actionLinearLayout.addView(view,layoutParams);
+              mRecyclerView.setVisibility(View.GONE);
+              actionLinearLayout.setVisibility(View.VISIBLE);
+              SeekBar bar4=view.findViewById(R.id.seekFive);
+              bar4.setOnSeekBarChangeListener(MainActivity.this);
+              RadioGroup group=view.findViewById(R.id.group);
+              final int[] color = {1};
+              RadioButton radioButton=view.findViewById(R.id.normal);
+              group.check(radioButton.getId());
+              final GraffitiView graffitiView= (GraffitiView) imageView;
+              group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+                  @Override
+                  public void onCheckedChanged(RadioGroup group, int checkedId) {
+                      color[0] =checkedId;
+                      Log.d(TAG, "onCheckedChanged: 选中的ID"+  color[0] );
+                      int index;
+                      switch (color[0]%6+1){
+                          case 1:
+                              index=getResources().getColor(R.color.black);
+                              break;
+                          case 2:
+                              index=getResources().getColor(R.color.red);
+                              break;
+                          case 3:
+                              index=getResources().getColor(R.color.yellow);
+                              break;
+                          case 4:
+                              index=getResources().getColor(R.color.blue);
+                              break;
+                          case 5:
+                              index=getResources().getColor(R.color.green);
+                              break;
+                          case 0:
+                              index=getResources().getColor(R.color.purple);
+                              break;
+                          default:
+                              index=getResources().getColor(R.color.black);
+                              break;
+
+                      }
+                      graffitiView.setColor(index);
+                  }
+
+              });
+                 Button confirmButton=view.findViewById(R.id.confirm);
+              confirmButton.setOnClickListener(new View.OnClickListener() {
+                  @Override
+                  public void onClick(View v) {
+                      graffitiView.undo();
+                  }});
+
+              break;
+
       }
 
     }

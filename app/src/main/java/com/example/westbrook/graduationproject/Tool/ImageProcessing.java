@@ -132,7 +132,6 @@ public class ImageProcessing {
         bitmap= Bitmap.createBitmap(currentBitmap.getWidth(),currentBitmap.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas canvas=new Canvas(bitmap);
         Paint paint=new Paint();
-        Log.d("name","处理图片");
         ColorMatrix imageMatrix =new ColorMatrix();
         imageMatrix.set(new float[]{1.438F,-0.122F,-0.016F,0,-0.03F,-0.062F,1.378F,-0.016F,0,0.05F,-0.062F,-0.122F,1.438F,0,-0.02F,0,0,0,1,0});
         paint.setColorFilter(new ColorMatrixColorFilter(imageMatrix));

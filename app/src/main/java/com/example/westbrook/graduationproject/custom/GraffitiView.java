@@ -13,6 +13,7 @@ import android.graphics.Color;
 import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.PixelFormat;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.RectF;
@@ -104,6 +105,40 @@ public class GraffitiView extends android.support.v7.widget.AppCompatImageView {
         super.setImageBitmap(bm);
         scaleBitmap(bm);
     }
+
+   public    Bitmap getNowBitmap(){
+            Drawable drawable=getDrawable();
+         // 取 drawable 的长宽
+         int w = drawable.getIntrinsicWidth();
+         int h = drawable.getIntrinsicHeight();
+
+         // 取 drawable 的颜色格式
+         Bitmap.Config config = drawable.getOpacity() != PixelFormat.OPAQUE ? Bitmap.Config.ARGB_8888
+                 : Bitmap.Config.RGB_565;
+         // 建立对应 bitmap
+         Bitmap bitmap = Bitmap.createBitmap(w, h, config);
+         // 建立对应 bitmap 的画布
+         Canvas canvas = new Canvas(bitmap);
+         drawable.setBounds(0, 0, w, h);
+         // 把 drawable 内容画到画布中
+         drawable.draw(canvas);
+       if(!mPaths.isEmpty()){
+           int canvasWidth = canvas.getWidth();
+           int canvasHeight = canvas.getHeight();
+           //新图层
+           int layerId = canvas.saveLayer(0, 0, canvasWidth, canvasHeight, null, Canvas.ALL_SAVE_FLAG);
+           canvas.clipRect(mBitmapRectF); //限定区域
+           for(DrawPath drawPath:mPaths){
+               //滑过的区域
+               drawPath.draw(canvas);
+           }
+           mPaint.setXfermode(mDuffXfermode);//设置叠加模式
+           canvas.drawBitmap(mMosaicBmp, mBitmapRectF.left, mBitmapRectF.top, mPaint);//画出重叠区域
+           mPaint.setXfermode(null);
+           canvas.restoreToCount(layerId);
+       }
+         return bitmap;
+     }
 
     // 生成小图
     private void scaleBitmap(Bitmap bm) {

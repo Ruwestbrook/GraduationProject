@@ -16,10 +16,6 @@
             </intent-filter>
         </activity>
 
-        <activity android:name=".TailoringActivity">
-
-
-        </activity>
         <provider
             android:authorities="com.westbrook.project.fileProvider"
             android:exported="false"

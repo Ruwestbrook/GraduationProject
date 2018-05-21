@@ -1,5 +1,6 @@
 <resources>
-    <string name="app_name">GraduationProject</string>
+    <string name="app_name">图像处理</string>
+    <string name="app_name21">GraduationProject</string>
     <string name="todo">TODO</string>
     <string name="choose">从文件夹中选择</string>
     <string name="take">拍一张照片</string>

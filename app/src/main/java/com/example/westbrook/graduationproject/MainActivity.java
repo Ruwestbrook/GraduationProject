@@ -67,6 +67,8 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     private int type;
 
     private int tmp=128;
+
+    private int nowType=0; //0代表其他  1.马赛克 2 涂鸦
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -111,7 +113,20 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         leftButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(currentBitmap!=null){
+                Bitmap bitmap;
+                if(nowType==0){
+                    if(holdBitmap!=null)
+                        bitmap=holdBitmap;
+                    else
+                    bitmap=currentBitmap;
+                }else  if(nowType==1){
+                    MosaicView view= (MosaicView) imageView;
+                    bitmap=view.getNowBitmap();
+                }else {
+                    GraffitiView view= (GraffitiView) imageView;
+                    bitmap=view.getNowBitmap();
+                }
+                if(bitmap!=null){
                     if (Environment.getExternalStorageState().equals( Environment.MEDIA_MOUNTED)) // 判断是否可以对SDcard进行操作  
                     {    // 获取SDCard指定目录下  
                         String  sdCardDir = Environment.getExternalStorageDirectory()+ "/CoolImage/";
@@ -124,7 +139,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                         FileOutputStream out = null;
                         try {
                             out = new FileOutputStream(file);
-                            currentBitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
+                            bitmap.compress(Bitmap.CompressFormat.JPEG, 90, out);
                         } catch (FileNotFoundException e) {
                             e.printStackTrace();
                             Log.d(TAG, "onClick: "+e.toString());
@@ -140,6 +155,8 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                 }else {
                     Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
                 }
+                }else {
+                    Toast.makeText(MainActivity.this, "请先选择图片", Toast.LENGTH_SHORT).show();
                 }
             }
 
@@ -148,7 +165,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
         actionLinearLayout=findViewById(R.id.action);
         LinearLayoutManager manager=new LinearLayoutManager(this);
         manager.setOrientation(LinearLayoutManager.HORIZONTAL);
-        String[] a={"添加马赛克","涂鸦","剪裁","旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片","二值化"};//"色调","饱和度","亮度",
+        String[] a={"添加马赛克","涂鸦","二值化","旋转","色相","灰度效果","怀旧","反转","去色","高饱和度","底片","浮雕","老照片"};//"色调","饱和度","亮度",
         for (int i=0;i<isDeal.length;i++){
             isDeal[i]=false;
         }
@@ -165,17 +182,33 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
              switch (position){
                  case 0:
+                     nowType=1;
                      backgroundLinearLayout.setOnClickListener(null);
-                     showPicture(1);
-                     imageView.setImageBitmap(currentBitmap);
+                    boolean isFirst= showPicture(1);
+                    if(isFirst){
+                        imageView.setImageBitmap(currentBitmap);
+                    }
+
                      break;
                  case 1:
+                     nowType=2;
                      backgroundLinearLayout.setOnClickListener(null);
-                     showPicture(2);
-                     showSeekBar(3);
+
+
                      flag=2;
-                     imageView.setImageBitmap(currentBitmap);
+                     boolean first=   showPicture(2);
+                     showSeekBar(3);
+                     if(first){
+                         imageView.setImageBitmap(currentBitmap);
+                     }
+                     break;
                  case 2:
+                     resetImageView();
+                     showSeekBar(2);
+                     flag=2;
+                     holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
+                     showPicture(0);
+                     imageView.setImageBitmap(holdBitmap);
                      break;
                  case 3:
                      showPicture(0);
@@ -198,6 +231,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
 
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
                      isDeal[5]=!isDeal[5];
 
@@ -210,6 +244,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
                      isDeal[6]=!isDeal[6];
 
@@ -222,6 +257,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
                      isDeal[7]=!isDeal[7];
                      break;
@@ -233,6 +269,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
 
                      isDeal[8]=!isDeal[8];
@@ -246,6 +283,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                      imageView.setImageBitmap(holdBitmap);
                  }else {
                      imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                  }
 
                      isDeal[9]=!isDeal[9];
@@ -259,6 +297,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
 
                      isDeal[10]=!isDeal[10];
@@ -271,6 +310,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                          imageView.setImageBitmap(holdBitmap);
                      }else {
                          imageView.setImageBitmap(currentBitmap);
+                         holdBitmap=null;
                      }
                      isDeal[11]=!isDeal[11];
 
@@ -287,15 +327,6 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                  }
                      isDeal[12]=!isDeal[12];
                      break;
-                 case 13:
-                     resetImageView();
-                     showSeekBar(2);
-                     flag=2;
-                     holdBitmap= ImageProcessing.convertToBMW(currentBitmap,tmp);
-                     showPicture(0);
-                     imageView.setImageBitmap(holdBitmap);
-                     break;
-
              }
 
             }
@@ -401,7 +432,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
     }
 
 
-   void showPicture(int type){
+   boolean showPicture(int type){
         boolean flag=false;
        if(type==0){
            if(((imageView instanceof GraffitiView) || (imageView instanceof MosaicView))){
@@ -411,20 +442,19 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
            }
 
        }else if (type==1){
-
+           Log.d(TAG, "showPicture: type===1 涂鸦");
             if(!(imageView instanceof MosaicView)){
                 backgroundLinearLayout.removeAllViews();
+                Log.d(TAG, "showPicture: type===1 谢谢谢谢谢谢谢谢谢");
                 imageView=new MosaicView(this);
                 flag=true;
             }
-
-        }else if (type==2){
+       }else if (type==2){
             if(!(imageView instanceof GraffitiView)){
                 backgroundLinearLayout.removeAllViews();
                 imageView=new GraffitiView(this);
                 flag=true;
             }
-
         }else if (type==3){
            backgroundLinearLayout.removeAllViews();
             imageView=new ImageView(this);
@@ -438,6 +468,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
             imageView.setLayoutParams(params);
             backgroundLinearLayout.addView(imageView);
         }
+        return  flag;
     }
 
 
@@ -621,7 +652,7 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
               bar4.setOnSeekBarChangeListener(MainActivity.this);
               RadioGroup group=view.findViewById(R.id.group);
               final int[] color = {1};
-              RadioButton radioButton=view.findViewById(R.id.normal);
+              RadioButton radioButton=view.findViewById(R.id.black);
               group.check(radioButton.getId());
               final GraffitiView graffitiView= (GraffitiView) imageView;
               group.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
@@ -630,23 +661,23 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                       color[0] =checkedId;
                       Log.d(TAG, "onCheckedChanged: 选中的ID"+  color[0] );
                       int index;
-                      switch (color[0]%6+1){
-                          case 1:
+                      switch (color[0]){
+                          case R.id.black:
                               index=getResources().getColor(R.color.black);
                               break;
-                          case 2:
+                          case R.id.red:
                               index=getResources().getColor(R.color.red);
                               break;
-                          case 3:
+                          case R.id.yellow:
                               index=getResources().getColor(R.color.yellow);
                               break;
-                          case 4:
+                          case R.id.blue:
                               index=getResources().getColor(R.color.blue);
                               break;
-                          case 5:
+                          case R.id.green:
                               index=getResources().getColor(R.color.green);
                               break;
-                          case 0:
+                          case R.id.purple:
                               index=getResources().getColor(R.color.purple);
                               break;
                           default:
@@ -654,6 +685,12 @@ public class MainActivity extends AppCompatActivity  implements SeekBar.OnSeekBa
                               break;
 
                       }
+                      Log.d(TAG, "onCheckedChanged: "+R.id.black);
+                      Log.d(TAG, "onCheckedChanged: "+R.id.red);
+                      Log.d(TAG, "onCheckedChanged: "+R.id.yellow);
+                      Log.d(TAG, "onCheckedChanged: "+R.id.blue);
+                      Log.d(TAG, "onCheckedChanged: "+R.id.green);
+                      Log.d(TAG, "onCheckedChanged: "+R.id.purple);
                       graffitiView.setColor(index);
                   }
 

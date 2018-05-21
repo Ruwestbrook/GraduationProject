@@ -17,7 +17,7 @@
           android:layout_marginLeft="15dp"
           android:textColor="@color/black"
           android:text="@string/black"
-            android:id="@+id/normal"
+          android:id="@+id/black"
           android:layout_height="20dp"
           android:layout_marginStart="15dp" />
 
@@ -26,6 +26,7 @@
           android:layout_width="50dp"
           android:layout_marginLeft="10dp"
           android:text="@string/red"
+          android:id="@+id/red"
           android:textColor="@color/red"
           android:layout_height="20dp"
           android:layout_marginStart="10dp" />
@@ -35,6 +36,7 @@
           android:layout_width="50dp"
           android:layout_marginLeft="10dp"
           android:text="@string/yellow"
+          android:id="@+id/yellow"
           android:textColor="@color/yellow"
           android:layout_height="20dp"
           android:layout_marginStart="10dp" />
@@ -44,10 +46,12 @@
           android:layout_width="50dp"
           android:layout_marginLeft="10dp"
           android:text="@string/blue"
+          android:id="@+id/blue"
           android:textColor="@color/blue"
           android:layout_height="20dp"
           android:layout_marginStart="10dp" />
       <RadioButton
+          android:id="@+id/green"
           android:layout_gravity="center_vertical"
           android:layout_width="50dp"
           android:layout_marginLeft="10dp"
@@ -60,6 +64,7 @@
           android:layout_width="50dp"
           android:layout_marginLeft="10dp"
           android:text="@string/purple"
+          android:id="@+id/purple"
           android:textColor="@color/purple"
           android:layout_height="20dp"
           android:layout_marginStart="10dp" />
